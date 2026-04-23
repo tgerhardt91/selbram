@@ -1,0 +1,17 @@
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/obj/Debug/Selbram.csproj.AssemblyReference.cache
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/obj/Debug/Selbram.GeneratedMSBuildEditorConfig.editorconfig
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/obj/Debug/Selbram.AssemblyInfoInputs.cache
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/obj/Debug/Selbram.AssemblyInfo.cs
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/obj/Debug/Selbram.csproj.CoreCompileInputs.cache
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/bin/Debug/Selbram.deps.json
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/bin/Debug/Selbram.runtimeconfig.json
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/bin/Debug/Selbram.dll
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/bin/Debug/Selbram.pdb
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/bin/Debug/GodotSharp.dll
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/bin/Debug/GodotSharpEditor.dll
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/obj/Debug/Selbram.csproj.Up2Date
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/obj/Debug/Selbram.dll
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/obj/Debug/refint/Selbram.dll
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/obj/Debug/Selbram.pdb
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/obj/Debug/Selbram.genruntimeconfig.cache
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/obj/Debug/ref/Selbram.dll

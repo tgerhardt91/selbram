@@ -1,0 +1,7 @@
+res://Scenes/TestLevel.tscn
+res://Scenes/Marble.tscn
+res://Scripts/Core/GameManager.cs
+res://Scripts/Level/SurfaceProperties.cs
+res://Scripts/Player/MarbleCamera.cs
+res://Scripts/Level/LevelManager.cs
+res://Scripts/Player/MarbleController.cs

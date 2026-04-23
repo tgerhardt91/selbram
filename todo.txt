@@ -1,0 +1,6 @@
+1. Apply deceleration
+2. Figure out how to link controller
+3. Modify acceleration based on controller input (how far stick is pushed)
+4. Figure out camera controls
+5. Set up git
+6. set up claude.md

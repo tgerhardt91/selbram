@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://jnteahmeabwh"]
+
+[ext_resource type="Script" path="res://Scripts/Player/MarbleController.cs" id="1_script"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_sphere"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_mesh"]
+radial_segments = 32
+rings = 16
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mat"]
+albedo_color = Color(0.2, 0.6, 1, 1)
+metallic = 0.3
+roughness = 0.2
+
+[node name="Marble" type="RigidBody3D"]
+collision_layer = 2
+continuous_cd = true
+contact_monitor = true
+max_contacts_reported = 4
+script = ExtResource("1_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_sphere")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_mesh")
+surface_material_override/0 = SubResource("StandardMaterial3D_mat")
