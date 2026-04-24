@@ -40,15 +40,6 @@ emission_enabled = true
 emission = Color(0.2, 0.8, 1, 1)
 emission_energy_multiplier = 0.3
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_ramp"]
-size = Vector3(6, 0.5, 10)
-
-[sub_resource type="BoxMesh" id="BoxMesh_ramp"]
-size = Vector3(6, 0.5, 10)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ramp"]
-albedo_color = Color(0.4, 0.5, 0.6, 1)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_platform"]
 size = Vector3(8, 1, 8)
 
@@ -57,6 +48,15 @@ size = Vector3(8, 1, 8)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_platform"]
 albedo_color = Color(0.2, 0.6, 0.4, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ramp"]
+size = Vector3(6, 0.5, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ramp"]
+size = Vector3(6, 0.5, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ramp"]
+albedo_color = Color(0.4, 0.5, 0.6, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_finish"]
 size = Vector3(4, 0.2, 4)
@@ -105,16 +105,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 15)
 [node name="MeshInstance3D" type="MeshInstance3D" parent="SpawnPoint"]
 mesh = SubResource("CylinderMesh_spawn")
 surface_material_override/0 = SubResource("StandardMaterial3D_spawn")
-
-[node name="Ramp1" type="StaticBody3D" parent="." groups=["level_geometry"]]
-transform = Transform3D(1, 0, 0, 0, 0.966, 0.259, 0, -0.259, 0.966, 0, 1, 0)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Ramp1"]
-shape = SubResource("BoxShape3D_ramp")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Ramp1"]
-mesh = SubResource("BoxMesh_ramp")
-surface_material_override/0 = SubResource("StandardMaterial3D_ramp")
 
 [node name="Platform1" type="StaticBody3D" parent="." groups=["level_geometry"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -12)

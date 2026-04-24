@@ -15,3 +15,4 @@
 /Users/travisgerhardt/gadot/selbram/.godot/mono/temp/obj/Debug/Selbram.pdb
 /Users/travisgerhardt/gadot/selbram/.godot/mono/temp/obj/Debug/Selbram.genruntimeconfig.cache
 /Users/travisgerhardt/gadot/selbram/.godot/mono/temp/obj/Debug/ref/Selbram.dll
+/Users/travisgerhardt/gadot/selbram/.godot/mono/temp/obj/Debug/Selbram.sourcelink.json

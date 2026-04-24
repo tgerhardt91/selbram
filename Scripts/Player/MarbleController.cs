@@ -15,19 +15,22 @@ public partial class MarbleController : RigidBody3D
 
 	[ExportGroup("Movement")]
 	[Export(PropertyHint.Range, "10.0,100.0,1.0")]
-	public float RollForce { get; set; } = 28.0f;
+	public float RollForce { get; set; } = 20.0f;
 
 	[Export(PropertyHint.Range, "5.0,50.0,1.0")]
-	public float MaxSpeed { get; set; } = 20.0f;
+	public float MaxSpeed { get; set; } = 18.0f;
 
 	[Export(PropertyHint.Range, "0.0,1.0,0.05")]
-	public float AirControlFactor { get; set; } = 0.25f;
+	public float AirControlFactor { get; set; } = 0.40f;
 
 	[Export]
-	public float GroundDeceleration { get; set; } = 12.0f;
+	public float GroundDeceleration { get; set; } = 16.0f;
 
 	[Export(PropertyHint.Range, "0.0,2.0,0.1")]
-	public float SlopeAssist { get; set; } = 0.5f;
+	public float SlopeAssist { get; set; } = 0.1f;
+
+	[Export(PropertyHint.Range, "0.0,3.0,0.1")]
+	public float SteeringFactor { get; set; } = 0.2f;
 
 	[ExportGroup("Jump")]
 	[Export(PropertyHint.Range, "5.0,30.0,1.0")]
@@ -38,6 +41,9 @@ public partial class MarbleController : RigidBody3D
 
 	[Export(PropertyHint.Range, "0.0,0.3,0.01")]
 	public float JumpBufferTime { get; set; } = 0.1f;
+
+	[Export(PropertyHint.Range, "0.0,15.0,0.5")]
+	public float JumpCutSpeed { get; set; } = 4.0f;
 
 	[ExportGroup("Ground Detection")]
 	[Export(PropertyHint.Range, "0.0,1.0,0.05")]
@@ -157,6 +163,7 @@ public partial class MarbleController : RigidBody3D
 
 		// Handle jump
 		HandleJump(input);
+		HandleVariableJump(input);
 
 		// Update power-ups
 		UpdatePowerUp(dt);
@@ -287,9 +294,13 @@ public partial class MarbleController : RigidBody3D
 			Vector3 torqueAxis = Vector3.Up.Cross(moveDirection).Normalized();
 			ApplyTorque(torqueAxis * force * delta * 60);
 
-			// Also apply a small direct force for responsiveness
-			ApplyCentralForce(moveDirection * force * 0.3f);
+			// Apply direct force for responsiveness
+			ApplyCentralForce(moveDirection * force * 0.5f);
 		}
+
+		// Counter lateral drift so direction changes feel tight rather than slidey
+		//Vector3 lateralVel = horizontalVelocity - moveDirection * currentSpeedInDirection;
+		//ApplyCentralForce(-lateralVel * force * SteeringFactor);
 	}
 
 	private Vector3 GetCameraRelativeDirection(Vector2 input)
@@ -386,6 +397,17 @@ public partial class MarbleController : RigidBody3D
 		if (canJump && wantsJump)
 		{
 			PerformJump();
+		}
+	}
+
+	private void HandleVariableJump(MarbleInput input)
+	{
+		// If jump released early while still rising, clamp upward velocity for a shorter jump
+		if (_hasJumped && !CurrentState.IsGrounded && !input.JumpHeld && LinearVelocity.Y > JumpCutSpeed)
+		{
+			var vel = LinearVelocity;
+			vel.Y = JumpCutSpeed;
+			LinearVelocity = vel;
 		}
 	}
 

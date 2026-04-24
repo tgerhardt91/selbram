@@ -158,6 +158,9 @@ public partial class MarbleCamera : Node3D
 
 		GlobalPosition = cameraPos;
 
+		// Keep our basis aligned with Yaw so MarbleController can read it for camera-relative movement
+		GlobalRotation = new Vector3(0, Yaw, 0);
+
 		// Look at target
 		_camera.LookAt(_currentPosition, Vector3.Up);
 	}
@@ -172,7 +175,7 @@ public partial class MarbleCamera : Node3D
 		if (input.CameraRotation.LengthSquared() > 0.01f)
 		{
 			Yaw -= input.CameraRotation.X * RotationSpeed * delta;
-			Pitch -= input.CameraRotation.Y * RotationSpeed * delta;
+			Pitch += input.CameraRotation.Y * RotationSpeed * delta;
 
 			// Clamp pitch
 			Pitch = Mathf.Clamp(Pitch, Mathf.DegToRad(MinPitch), Mathf.DegToRad(MaxPitch));
@@ -185,7 +188,7 @@ public partial class MarbleCamera : Node3D
 	/// </summary>
 	public void HandleMouseMotion(Vector2 motion, float sensitivity = 0.002f)
 	{
-		Yaw -= motion.X * sensitivity;
+		Yaw += motion.X * sensitivity;
 		Pitch -= motion.Y * sensitivity;
 		Pitch = Mathf.Clamp(Pitch, Mathf.DegToRad(MinPitch), Mathf.DegToRad(MaxPitch));
 	}
