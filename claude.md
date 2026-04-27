@@ -1,6 +1,6 @@
 # Selbram
 
-A 3D marble racing game built in Godot 4.3 with C#, inspired by Marble Blast Ultra.
+A 3D marble game built in Godot 4.3 with C#, inspired by Marble Blast Ultra.
 
 ## Project Overview
 
@@ -16,6 +16,12 @@ A 3D marble racing game built in Godot 4.3 with C#, inspired by Marble Blast Ult
 Input is decoupled from game logic via `IInputProvider` interface. This allows:
 - Local input per player (for splitscreen)
 - Potential replay/ghost systems later
+
+## Context7 Integration
+- **Always use Context7 MCP** when searching library/API documentation, code generation, setup, or configuration steps.
+- Do not wait for me to explicitly ask; use the `resolve-library-id` and `get-library-docs` tools automatically when referencing external libraries.
+- If a specific version is mentioned (e.g., "Godot 4.3"), ensure Context7 fetches docs for that specific version.
+- When looking for Godot documentation use library id /godotengine/godot-docs
 
 Key files:
 - `Scripts/Input/IInputProvider.cs` - Interface

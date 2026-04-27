@@ -1,3 +1,18 @@
+* Use godot MCP tool: https://github.com/Coding-Solo/godot-mcp
+* Look into token usage: https://www.reddit.com/r/ClaudeAI/comments/1s7fcjf/claude_usage_limits_discussion_megathread_ongoing/
+
 1. Modify acceleration based on controller input (how far stick is pushed)
 2. Have claude add comments to values in MarbleController
 3. Work on "over" acceleration
+4. Bring camera in closer and lock distance (maybe make marble bigger?)
+5. Add pattern to ball so that you can see it spin
+6. Fix variable jump height
+7. Add godot specific gitignore
+
+
+Ideas
+- Ice
+- Hold trigger for boost
+- Flying
+- Bumpers
+- Boost pads
