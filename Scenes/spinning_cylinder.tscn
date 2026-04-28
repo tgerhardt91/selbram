@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://cllhygkgggej4"]
+
+[node name="SpinningCylinder" type="Node3D"]
+
+[node name="CSGCombiner3D" type="CSGCombiner3D" parent="."]
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="CSGCombiner3D"]
+radius = 1.86563
+height = 4.28188
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="CSGCombiner3D/CSGCylinder3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0229167, -0.230024, 0.0614275)
+operation = 2
+radius = 1.61264
+height = 6.1473

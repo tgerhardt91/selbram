@@ -16,3 +16,4 @@ Ideas
 - Flying
 - Bumpers
 - Boost pads
+- Ghost mode (disable collision with other player)

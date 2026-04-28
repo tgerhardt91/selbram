@@ -1,0 +1,5 @@
+StaticBody3D
+MeshInstance3D
+CollisionShape3D
+CSGCylinder3D
+CSGCombiner3D

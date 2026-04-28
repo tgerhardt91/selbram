@@ -5,10 +5,10 @@
 [ext_resource type="Script" path="res://Scripts/Level/LevelManager.cs" id="3_levelmanager"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
-sky_top_color = Color(0.3, 0.5, 0.8, 1)
-sky_horizon_color = Color(0.6, 0.7, 0.9, 1)
-ground_bottom_color = Color(0.2, 0.2, 0.3, 1)
-ground_horizon_color = Color(0.4, 0.45, 0.5, 1)
+sky_top_color = Color(0.05, 0.05, 0.15, 1)
+sky_horizon_color = Color(0.1, 0.1, 0.3, 1)
+ground_bottom_color = Color(0.05, 0.05, 0.1, 1)
+ground_horizon_color = Color(0.1, 0.1, 0.2, 1)
 
 [sub_resource type="Sky" id="Sky_sky"]
 sky_material = SubResource("ProceduralSkyMaterial_sky")
@@ -17,7 +17,7 @@ sky_material = SubResource("ProceduralSkyMaterial_sky")
 background_mode = 2
 sky = SubResource("Sky_sky")
 ambient_light_source = 2
-ambient_light_color = Color(0.6, 0.65, 0.75, 1)
+ambient_light_color = Color(0.4, 0.45, 0.6, 1)
 tonemap_mode = 2
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
@@ -41,13 +41,13 @@ emission = Color(0.2, 0.8, 1, 1)
 emission_energy_multiplier = 0.3
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_platform"]
-size = Vector3(8, 1, 8)
+size = Vector3(10, 1, 10)
 
 [sub_resource type="BoxMesh" id="BoxMesh_platform"]
-size = Vector3(8, 1, 8)
+size = Vector3(10, 1, 10)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_platform"]
-albedo_color = Color(0.2, 0.6, 0.4, 1)
+albedo_color = Color(0.35, 0.35, 0.4, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ramp"]
 size = Vector3(6, 0.5, 10)
@@ -70,7 +70,7 @@ emission_enabled = true
 emission = Color(1, 0.8, 0.2, 1)
 emission_energy_multiplier = 0.5
 
-[node name="TestLevel" type="Node3D"]
+[node name="level_1" type="Node3D"]
 
 [node name="GameManager" type="Node" parent="."]
 script = ExtResource("1_gamemanager")
@@ -81,6 +81,7 @@ SpawnPointPath = NodePath("../SpawnPoint")
 script = ExtResource("3_levelmanager")
 FinishAreaPath = NodePath("../FinishPlatform/FinishPad")
 KillZonePath = NodePath("../KillZone")
+NextLevelPath = "res://Scenes/level_2.tscn"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_env")
@@ -107,7 +108,7 @@ mesh = SubResource("CylinderMesh_spawn")
 surface_material_override/0 = SubResource("StandardMaterial3D_spawn")
 
 [node name="Platform1" type="StaticBody3D" parent="." groups=["level_geometry"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -12)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.02351, 2.66379, -12.7993)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Platform1"]
 shape = SubResource("BoxShape3D_platform")
@@ -127,12 +128,22 @@ mesh = SubResource("BoxMesh_ramp")
 surface_material_override/0 = SubResource("StandardMaterial3D_ramp")
 
 [node name="Platform2" type="StaticBody3D" parent="." groups=["level_geometry"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 4, -10)
+transform = Transform3D(0.286349, 0, 0, 0, 0.888892, 0, 0, 0, 0.479605, 4.41468, 2.84262, 2.33626)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Platform2"]
 shape = SubResource("BoxShape3D_platform")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Platform2"]
+mesh = SubResource("BoxMesh_platform")
+surface_material_override/0 = SubResource("StandardMaterial3D_platform")
+
+[node name="Platform3" type="StaticBody3D" parent="." groups=["level_geometry"]]
+transform = Transform3D(0.286349, 0, 0, 0, 0.888892, 0, 0, 0, 0.479605, 1.46848, 3.22309, -2.23332)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform3"]
+shape = SubResource("BoxShape3D_platform")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Platform3"]
 mesh = SubResource("BoxMesh_platform")
 surface_material_override/0 = SubResource("StandardMaterial3D_platform")
 
@@ -148,6 +159,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_platform")
 
 [node name="FinishPad" type="Area3D" parent="FinishPlatform"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="FinishPlatform/FinishPad"]
 shape = SubResource("BoxShape3D_finish")
@@ -158,6 +170,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_finish")
 
 [node name="KillZone" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -20, 0)
+collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="KillZone"]
 shape = SubResource("BoxShape3D_floor")

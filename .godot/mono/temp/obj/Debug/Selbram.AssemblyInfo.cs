@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Selbram")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6c404974c748d2c57b77a6026f0ee03e3dc6b8ef")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+36a13378a21baf7daf67d378413ff3a8ca4c4390")]
 [assembly: System.Reflection.AssemblyProductAttribute("Selbram")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Selbram")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

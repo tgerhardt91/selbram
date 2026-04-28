@@ -15,7 +15,7 @@ public partial class MarbleController : RigidBody3D
 
 	[ExportGroup("Movement")]
 	[Export(PropertyHint.Range, "10.0,100.0,1.0")]
-	public float RollForce { get; set; } = 20.0f;
+	public float RollForce { get; set; } = 14.0f;
 
 	[Export(PropertyHint.Range, "5.0,50.0,1.0")]
 	public float MaxSpeed { get; set; } = 18.0f;
@@ -24,7 +24,7 @@ public partial class MarbleController : RigidBody3D
 	public float AirControlFactor { get; set; } = 0.40f;
 
 	[Export]
-	public float GroundDeceleration { get; set; } = 16.0f;
+	public float GroundDeceleration { get; set; } = 7.0f;
 
 	[Export(PropertyHint.Range, "0.0,2.0,0.1")]
 	public float SlopeAssist { get; set; } = 0.1f;

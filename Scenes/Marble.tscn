@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://jnteahmeabwh"]
+[gd_scene load_steps=6 format=3 uid="uid://jnteahmeabwh"]
 
 [ext_resource type="Script" path="res://Scripts/Player/MarbleController.cs" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://bhayx7jq8i40x" path="res://Assets/metallic_texture.jpg" id="2_erxcp"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_sphere"]
 
@@ -10,14 +11,17 @@ rings = 16
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mat"]
 albedo_color = Color(0.2, 0.6, 1, 1)
+albedo_texture = ExtResource("2_erxcp")
 metallic = 0.3
 roughness = 0.2
 
 [node name="Marble" type="RigidBody3D"]
 collision_layer = 2
+mass = 1.5
 continuous_cd = true
 contact_monitor = true
 max_contacts_reported = 4
+linear_damp = 0.1
 script = ExtResource("1_script")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]

@@ -5,7 +5,7 @@ namespace Selbram.Player;
 
 /// <summary>
 /// Third-person orbit camera that follows the marble.
-/// Handles smooth following, rotation, and collision avoidance.
+/// Fixed distance behind and above the marble — only yaw rotation is allowed.
 /// </summary>
 public partial class MarbleCamera : Node3D
 {
@@ -17,23 +17,26 @@ public partial class MarbleCamera : Node3D
 
 	[ExportGroup("Distance")]
 	[Export(PropertyHint.Range, "2.0,20.0,0.5")]
-	public float Distance { get; set; } = 12.0f;
+	public float Distance { get; set; } = 4.0f;
 
 	[Export(PropertyHint.Range, "0.0,10.0,0.5")]
-	public float Height { get; set; } = 4.0f;
+	public float Height { get; set; } = 2.0f;
 
 	[Export(PropertyHint.Range, "1.0,15.0,0.5")]
-	public float MinDistance { get; set; } = 3.0f;
+	public float MinDistance { get; set; } = 1.5f;
 
 	[ExportGroup("Rotation")]
 	[Export(PropertyHint.Range, "0.5,5.0,0.1")]
 	public float RotationSpeed { get; set; } = 2.0f;
 
-	[Export(PropertyHint.Range, "-80.0,0.0,5.0")]
-	public float MinPitch { get; set; } = -60.0f;
+	[Export(PropertyHint.Range, "0.5,3.0,0.1")]
+	public float PitchSpeed { get; set; } = 1.5f;
 
-	[Export(PropertyHint.Range, "0.0,80.0,5.0")]
-	public float MaxPitch { get; set; } = 30.0f;
+	[Export(PropertyHint.Range, "0.0,1.0,0.05")]
+	public float MaxPitchAngle { get; set; } = 0.4f;
+
+	[Export(PropertyHint.Range, "1.0,15.0,0.5")]
+	public float PitchSnapSpeed { get; set; } = 5.0f;
 
 	[ExportGroup("Smoothing")]
 	[Export(PropertyHint.Range, "1.0,20.0,0.5")]
@@ -70,11 +73,6 @@ public partial class MarbleCamera : Node3D
 	public float Yaw { get; set; }
 
 	/// <summary>
-	/// Current pitch rotation in radians.
-	/// </summary>
-	public float Pitch { get; set; }
-
-	/// <summary>
 	/// The input provider for camera rotation.
 	/// </summary>
 	public IInputProvider? InputProvider { get; set; }
@@ -83,12 +81,12 @@ public partial class MarbleCamera : Node3D
 	private Camera3D? _camera;
 	private Vector3 _currentPosition;
 	private float _currentDistance;
+	private float _pitchOffset;
 
 	#endregion
 
 	public override void _Ready()
 	{
-		// Get or create camera
 		_camera = GetNodeOrNull<Camera3D>("Camera3D");
 		if (_camera == null)
 		{
@@ -96,23 +94,18 @@ public partial class MarbleCamera : Node3D
 			AddChild(_camera);
 		}
 
-		// Get target from path if set
 		if (TargetPath != null && !TargetPath.IsEmpty)
 		{
 			Target = GetNodeOrNull<Node3D>(TargetPath);
 		}
 
-		// Initialize rotation
-		Pitch = Mathf.DegToRad(-20.0f); // Slight downward angle by default
-		_currentDistance = Distance;
-
-		// Initialize position
 		if (Target != null)
 		{
 			_currentPosition = Target.GlobalPosition;
 		}
 
-		// Make this the current camera
+		_currentDistance = Mathf.Sqrt(Distance * Distance + Height * Height);
+
 		_camera.Current = true;
 	}
 
@@ -122,90 +115,63 @@ public partial class MarbleCamera : Node3D
 
 		float dt = (float)delta;
 
-		// Handle rotation input
 		HandleRotationInput(dt);
 
-		// Calculate desired position
+		// Smooth follow target with optional look-ahead
 		Vector3 targetPos = Target.GlobalPosition;
-
-		// Add look-ahead based on velocity
 		if (Target is RigidBody3D rb && LookAheadFactor > 0)
 		{
-			Vector3 velocity = rb.LinearVelocity;
-			velocity.Y = 0; // Only horizontal look-ahead
-			targetPos += velocity * LookAheadFactor * 0.1f;
+			Vector3 vel = rb.LinearVelocity;
+			vel.Y = 0;
+			targetPos += vel * LookAheadFactor * 0.1f;
 		}
-
-		// Smooth follow the target
 		_currentPosition = _currentPosition.Lerp(targetPos, dt * PositionSmoothing);
 
-		// Calculate camera offset based on rotation
-		Vector3 offset = CalculateCameraOffset();
+		// Spherical orbit: pitch-adjusted position behind and above marble
+		Vector3 behindDir = new Vector3(Mathf.Sin(Yaw), 0, Mathf.Cos(Yaw));
+		float orbitRadius = Mathf.Sqrt(Distance * Distance + Height * Height);
+		float elevation = Mathf.Atan2(Height, Distance) + _pitchOffset;
+		Vector3 offset = behindDir * (orbitRadius * Mathf.Cos(elevation))
+						 + Vector3.Up * (orbitRadius * Mathf.Sin(elevation));
 
-		// Check for collisions and adjust distance
-		float desiredDistance = Distance;
+		// Collision: cast ray along the offset to prevent clipping
+		float desiredDist = orbitRadius;
 		if (EnableCollision)
 		{
-			desiredDistance = CheckCollision(_currentPosition, offset, Distance);
+			desiredDist = CheckCollision(_currentPosition, offset, desiredDist);
 		}
+		_currentDistance = Mathf.Lerp(_currentDistance, desiredDist, dt * DistanceSmoothing);
 
-		// Smooth distance changes (slow for stability)
-		_currentDistance = Mathf.Lerp(_currentDistance, desiredDistance, dt * DistanceSmoothing);
+		GlobalPosition = _currentPosition + offset.Normalized() * _currentDistance;
 
-		// Apply position
-		Vector3 cameraPos = _currentPosition + offset.Normalized() * _currentDistance;
-		cameraPos.Y = _currentPosition.Y + Height + Mathf.Sin(Pitch) * _currentDistance * 0.5f;
-
-		GlobalPosition = cameraPos;
-
-		// Keep our basis aligned with Yaw so MarbleController can read it for camera-relative movement
+		// Keep basis aligned with Yaw so MarbleController can read it for camera-relative movement
 		GlobalRotation = new Vector3(0, Yaw, 0);
 
-		// Look at target
 		_camera.LookAt(_currentPosition, Vector3.Up);
 	}
 
 	private void HandleRotationInput(float delta)
 	{
-		// Get input from provider or return
 		if (InputProvider == null) return;
+		var input = InputProvider.GetInput(0);
 
-		var input = InputProvider.GetInput(0); // Tick doesn't matter for camera
-
-		if (input.CameraRotation.LengthSquared() > 0.01f)
-		{
+		if (Mathf.Abs(input.CameraRotation.X) > 0.01f)
 			Yaw -= input.CameraRotation.X * RotationSpeed * delta;
-			Pitch += input.CameraRotation.Y * RotationSpeed * delta;
 
-			// Clamp pitch
-			Pitch = Mathf.Clamp(Pitch, Mathf.DegToRad(MinPitch), Mathf.DegToRad(MaxPitch));
-		}
+		if (Mathf.Abs(input.CameraRotation.Y) > 0.01f)
+			_pitchOffset = Mathf.Clamp(
+				_pitchOffset + input.CameraRotation.Y * PitchSpeed * delta,
+				-MaxPitchAngle, MaxPitchAngle);
+		else
+			_pitchOffset = Mathf.Lerp(_pitchOffset, 0f, delta * PitchSnapSpeed);
 	}
 
 	/// <summary>
-	/// Handles mouse motion for camera rotation.
-	/// Call this from _Input when mouse is captured.
+	/// Handles mouse motion for camera rotation. Only yaw is applied.
 	/// </summary>
 	public void HandleMouseMotion(Vector2 motion, float sensitivity = 0.002f)
 	{
 		Yaw += motion.X * sensitivity;
-		Pitch -= motion.Y * sensitivity;
-		Pitch = Mathf.Clamp(Pitch, Mathf.DegToRad(MinPitch), Mathf.DegToRad(MaxPitch));
-	}
-
-	private Vector3 CalculateCameraOffset()
-	{
-		// Calculate offset based on yaw and pitch
-		float horizontalDistance = Mathf.Cos(Pitch);
-		float verticalOffset = Mathf.Sin(Pitch);
-
-		Vector3 offset = new(
-			Mathf.Sin(Yaw) * horizontalDistance,
-			verticalOffset,
-			Mathf.Cos(Yaw) * horizontalDistance
-		);
-
-		return offset * Distance;
 	}
 
 	private float CheckCollision(Vector3 target, Vector3 direction, float maxDistance)
@@ -219,7 +185,6 @@ public partial class MarbleCamera : Node3D
 			CollisionMask
 		);
 
-		// Exclude the target from collision checks
 		if (Target is CollisionObject3D co)
 		{
 			query.Exclude = new Godot.Collections.Array<Rid> { co.GetRid() };
@@ -266,7 +231,7 @@ public partial class MarbleCamera : Node3D
 		if (Target != null)
 		{
 			_currentPosition = Target.GlobalPosition;
-			_currentDistance = Distance;
+			_currentDistance = Mathf.Sqrt(Distance * Distance + Height * Height);
 		}
 	}
 }

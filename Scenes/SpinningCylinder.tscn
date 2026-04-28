@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://b7plynui6ajtx"]
+
+[ext_resource type="Script" path="res://Scripts/Level/SpinningCylinder.cs" id="1_cylscr"]
+[ext_resource type="PackedScene" uid="uid://0bgcynn5ps43" path="res://Assets/SpinningCylinder.glb" id="2_cylglb"]
+
+[node name="SpinningCylinder" type="AnimatableBody3D"]
+script = ExtResource("1_cylscr")
+
+[node name="Mesh" parent="." instance=ExtResource("2_cylglb")]
