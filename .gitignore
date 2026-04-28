@@ -1,0 +1,19 @@
+# Godot 4 generated files
+.godot/
+
+# Mono/C# build artifacts
+.mono/
+bin/
+obj/
+
+# macOS
+.DS_Store
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+
+# Export presets (may contain sensitive paths)
+export_presets.cfg
