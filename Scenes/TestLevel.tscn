@@ -3,6 +3,8 @@
 [ext_resource type="Script" path="res://Scripts/Core/GameManager.cs" id="1_gamemanager"]
 [ext_resource type="PackedScene" uid="uid://jnteahmeabwh" path="res://Scenes/Marble.tscn" id="2_marble"]
 [ext_resource type="Script" path="res://Scripts/Level/LevelManager.cs" id="3_levelmanager"]
+[ext_resource type="PackedScene" uid="uid://bijshxbuq5ksf" path="res://Scenes/LevelGeometry/Platforms/ramp.tscn" id="4_pp5ar"]
+[ext_resource type="PackedScene" uid="uid://poutnj3cf16p" path="res://Scenes/LevelGeometry/Platforms/beam.tscn" id="5_ww3o6"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.05, 0.05, 0.15, 1)
@@ -19,26 +21,6 @@ sky = SubResource("Sky_sky")
 ambient_light_source = 2
 ambient_light_color = Color(0.4, 0.45, 0.6, 1)
 tonemap_mode = 2
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
-size = Vector3(40, 1, 40)
-
-[sub_resource type="BoxMesh" id="BoxMesh_floor"]
-size = Vector3(40, 1, 40)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
-albedo_color = Color(0.3, 0.35, 0.4, 1)
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_spawn"]
-top_radius = 1.0
-bottom_radius = 1.0
-height = 0.1
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spawn"]
-albedo_color = Color(0.2, 0.8, 1, 1)
-emission_enabled = true
-emission = Color(0.2, 0.8, 1, 1)
-emission_energy_multiplier = 0.3
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_platform"]
 size = Vector3(10, 1, 10)
@@ -70,7 +52,24 @@ emission_enabled = true
 emission = Color(1, 0.8, 0.2, 1)
 emission_energy_multiplier = 0.5
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(40, 1, 40)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_eks3b"]
+top_radius = 1.0
+bottom_radius = 1.0
+height = 0.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mtk0e"]
+albedo_color = Color(0.2, 0.8, 1, 1)
+emission_enabled = true
+emission = Color(0.2, 0.8, 1, 1)
+emission_energy_multiplier = 0.3
+
 [node name="level_1" type="Node3D"]
+
+[node name="Ramp" parent="." instance=ExtResource("4_pp5ar")]
+transform = Transform3D(-0.0103669, 0, -0.999946, 0, 1, 0, 0.999946, 0, -0.0103669, 11.3763, 1.11209, -19.6367)
 
 [node name="GameManager" type="Node" parent="."]
 script = ExtResource("1_gamemanager")
@@ -90,23 +89,6 @@ environment = SubResource("Environment_env")
 transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 10, 20, 10)
 shadow_enabled = true
 
-[node name="Floor" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
-shape = SubResource("BoxShape3D_floor")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
-mesh = SubResource("BoxMesh_floor")
-surface_material_override/0 = SubResource("StandardMaterial3D_floor")
-
-[node name="SpawnPoint" type="Node3D" parent="."]
-transform = Transform3D(-0.872786, 0, -0.488104, 0, 1, 0, 0.488104, 0, -0.872786, 0, 0.1, 15)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="SpawnPoint"]
-mesh = SubResource("CylinderMesh_spawn")
-surface_material_override/0 = SubResource("StandardMaterial3D_spawn")
-
 [node name="Platform1" type="StaticBody3D" parent="." groups=["level_geometry"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.02351, 2.66379, -12.7993)
 
@@ -114,6 +96,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.02351, 2.66379, -12.7993)
 shape = SubResource("BoxShape3D_platform")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Platform1"]
+mesh = SubResource("BoxMesh_platform")
+surface_material_override/0 = SubResource("StandardMaterial3D_platform")
+
+[node name="Platform4" type="StaticBody3D" parent="." groups=["level_geometry"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.8416, 4.54417, -25.7314)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform4"]
+shape = SubResource("BoxShape3D_platform")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Platform4"]
+transform = Transform3D(1, 0, 0, 0, 0.746275, 0, 0, 0, 0.68245, 0.259997, 0.0895157, -1.19688)
 mesh = SubResource("BoxMesh_platform")
 surface_material_override/0 = SubResource("StandardMaterial3D_platform")
 
@@ -174,3 +167,13 @@ collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="KillZone"]
 shape = SubResource("BoxShape3D_floor")
+
+[node name="Path" parent="." instance=ExtResource("5_ww3o6")]
+transform = Transform3D(-0.0124265, 0, -0.999923, 0, 1, 0, 0.999923, 0, -0.0124265, 12.1769, -0.239494, -9.37099)
+
+[node name="SpawnPoint" type="Node3D" parent="."]
+transform = Transform3D(0.0494771, 0, 0.998775, 0, 1, 0, -0.998775, 0, 0.0494771, 12.5594, 5.13469, -27.8634)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SpawnPoint"]
+mesh = SubResource("CylinderMesh_eks3b")
+surface_material_override/0 = SubResource("StandardMaterial3D_mtk0e")

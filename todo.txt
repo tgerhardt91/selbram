@@ -17,3 +17,8 @@ Ideas
 - Par times (C/B/A/S)
 - Monkey ball style level select
 - Tilted, curved path level using path3d and polygon3d
+
+Level design
+
+- Downhill race style level (can build with path3d)
+    - Should have things to dodge, maybe boost pads, jumps
