@@ -6,7 +6,8 @@
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('mcpServers',{}\\), indent=2\\)\\)\")",
       "Bash(/Applications/Blender.app/Contents/MacOS/Blender *)",
       "mcp__blender__execute_blender_code",
-      "mcp__blender__get_viewport_screenshot"
+      "mcp__blender__get_viewport_screenshot",
+      "Bash(git -C /Users/travisgerhardt/gadot/selbram ls-files)"
     ]
   }
 }

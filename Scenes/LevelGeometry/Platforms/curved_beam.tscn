@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3 uid="uid://c4u1hh78fqvbd"]
+
+[sub_resource type="Curve3D" id="Curve3D_mq4x3"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -9.46651, 0, -3.87439, -0.504858, 0, -2.09368, 0.504858, 0, 2.09368, -3.51215, 0, -2.35982, -2.89808, 0, 0.90672, 2.89808, 0, -0.90672, 3.92966, 0, -6.10265, 3.18992, 0, -1.3503, -3.18992, 0, 1.3503, 6.08273, 0, -4.05352, 0, 0, 0, 0, 0, 0, 9.15643, 0, -1.06892),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0)
+}
+point_count = 5
+
+[node name="CurvedBeam" type="Node3D"]
+
+[node name="Path3D" type="Path3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0445471, 0, -0.0148492)
+curve = SubResource("Curve3D_mq4x3")
+
+[node name="CSGPolygon3D" type="CSGPolygon3D" parent="."]
+transform = Transform3D(1.44254, 0, 0, 0, 1.25375, 0, 0, 0, 1.25375, 0, 0, 0)
+use_collision = true
+polygon = PackedVector2Array(0.783491, -0.00283422, 0.758238, 1.00179, 1, 1, 1, 0)
+mode = 2
+path_node = NodePath("../Path3D")
+path_interval_type = 0
+path_interval = 0.47
+path_simplify_angle = 0.0
+path_rotation = 2
+path_local = false
+path_continuous_u = true
+path_u_distance = 1.0
+path_joined = false

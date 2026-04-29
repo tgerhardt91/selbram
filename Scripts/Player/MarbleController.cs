@@ -126,7 +126,7 @@ public partial class MarbleController : RigidBody3D
 		// Set up physics properties
 		PhysicsMaterialOverride = new PhysicsMaterial
 		{
-			Friction = 0.5f,
+			Friction = 0.3f,
 			Bounce = 0.3f
 		};
 
@@ -183,16 +183,18 @@ public partial class MarbleController : RigidBody3D
 
 		bool wasGrounded = CurrentState.IsGrounded;
 		bool isGrounded = false;
-		_groundNormal = Vector3.Up;
+		bool gotNormal = false;
 
 		if (_groundRay.IsColliding())
 		{
-			_groundNormal = _groundRay.GetCollisionNormal();
-			float slopeAngle = Mathf.RadToDeg(Mathf.Acos(_groundNormal.Dot(Vector3.Up)));
+			var normal = _groundRay.GetCollisionNormal();
+			float slopeAngle = Mathf.RadToDeg(Mathf.Acos(normal.Dot(Vector3.Up)));
 
 			if (slopeAngle <= MaxSlopeAngle)
 			{
 				isGrounded = true;
+				_groundNormal = normal;
+				gotNormal = true;
 
 				// Try to get surface properties from collider
 				var collider = _groundRay.GetCollider();
@@ -203,12 +205,18 @@ public partial class MarbleController : RigidBody3D
 			}
 		}
 
-		// Fallback: check if we have any contacts (simplified check)
+		// Fallback: if raycast missed but physics has contacts, stay grounded.
+		// Preserve _groundNormal from the last raycast hit — resetting to Vector3.Up
+		// here would zero out slope acceleration on the very frames it's needed most.
 		if (!isGrounded && GetContactCount() > 0)
 		{
-			// If raycast missed but we have contacts, assume grounded on flat surface
-			// This handles edge cases where the marble is resting on geometry
 			isGrounded = true;
+			// _groundNormal intentionally not touched
+		}
+
+		// Only reset to flat when the marble is confirmed airborne
+		if (!isGrounded && !gotNormal)
+		{
 			_groundNormal = Vector3.Up;
 		}
 
@@ -235,12 +243,39 @@ public partial class MarbleController : RigidBody3D
 
 	private void ApplyMovement(MarbleInput input, float delta)
 	{
-		// Apply deceleration when grounded with no input
+		// Kill spin while airborne so slope torque doesn't carry into the landing
+		if (!CurrentState.IsGrounded)
+		{
+			AngularVelocity = AngularVelocity.Lerp(Vector3.Zero, delta * 8f);
+		}
+
+		// Push the marble downhill whenever it's on a slope.
+		// Godot's friction combine can counteract gravity on moderate slopes, so we
+		// drive slope acceleration explicitly — gravity component along the surface.
+		if (CurrentState.IsGrounded)
+		{
+			float slopeRad = Mathf.Acos(Mathf.Clamp(_groundNormal.Dot(Vector3.Up), -1f, 1f));
+			if (slopeRad > 0.035f) // ~2 degrees
+			{
+				Vector3 downhill = Vector3.Down.Slide(_groundNormal).Normalized();
+				float slopeForce = Mass * 9.8f * Mathf.Sin(slopeRad);
+				ApplyCentralForce(downhill * slopeForce);
+				// Torque couples the translation to angular spin so marble rolls, not slides
+				Vector3 torqueAxis = downhill.Cross(_groundNormal).Normalized();
+				ApplyTorque(torqueAxis * slopeForce * delta * 60f);
+			}
+		}
+
+		// Apply deceleration when grounded with no input.
+		// On slopes, scale it toward zero so gravity drives the roll naturally.
 		if (!input.HasMovement)
 		{
 			if (CurrentState.IsGrounded)
 			{
-				ApplyDeceleration(delta);
+				float slopeAngle = Mathf.RadToDeg(Mathf.Acos(_groundNormal.Dot(Vector3.Up)));
+				float slopeFactor = 1.0f - Mathf.Clamp(slopeAngle / 5.0f, 0f, 1f);
+				if (slopeFactor > 0.01f)
+					ApplyDeceleration(delta, slopeFactor);
 			}
 			return;
 		}
@@ -327,14 +362,16 @@ public partial class MarbleController : RigidBody3D
 
 	private void ClampVelocity()
 	{
+		// Let gravity accelerate the marble freely on slopes
+		float slopeAngle = Mathf.RadToDeg(Mathf.Acos(_groundNormal.Dot(Vector3.Up)));
+		if (CurrentState.IsGrounded && slopeAngle > 5.0f)
+			return;
+
 		float maxSpd = MaxSpeed;
 		if (ActivePowerUp == PowerUpType.SuperSpeed)
-		{
 			maxSpd *= SuperSpeedMultiplier;
-		}
 		maxSpd *= _currentSurface.SpeedModifier;
 
-		// Only clamp horizontal velocity
 		Vector3 vel = LinearVelocity;
 		Vector2 horizontalVel = new(vel.X, vel.Z);
 
@@ -345,29 +382,26 @@ public partial class MarbleController : RigidBody3D
 		}
 	}
 
-	private void ApplyDeceleration(float delta)
+	private void ApplyDeceleration(float delta, float scale = 1.0f)
 	{
 		Vector3 vel = LinearVelocity;
 		Vector2 horizontalVel = new(vel.X, vel.Z);
 		float speed = horizontalVel.Length();
 
-		// Stop completely at low speeds to prevent jittering
-		if (speed < 0.1f)
+		// Only hard-stop on near-flat ground to prevent jittering
+		if (speed < 0.1f && scale > 0.9f)
 		{
 			LinearVelocity = new Vector3(0, vel.Y, 0);
 			return;
 		}
 
-		// Reduce speed by deceleration amount
-		float decelAmount = GroundDeceleration * _currentSurface.RollResistance * delta;
+		float decelAmount = GroundDeceleration * _currentSurface.RollResistance * delta * scale;
 		float newSpeed = Mathf.Max(0, speed - decelAmount);
 
-		// Apply new velocity, preserving direction
 		horizontalVel = horizontalVel.Normalized() * newSpeed;
 		LinearVelocity = new Vector3(horizontalVel.X, vel.Y, horizontalVel.Y);
 
-		// Slow rotation as well
-		AngularVelocity = AngularVelocity.Lerp(Vector3.Zero, delta * 3.0f);
+		AngularVelocity = AngularVelocity.Lerp(Vector3.Zero, delta * 3.0f * scale);
 	}
 
 	#endregion

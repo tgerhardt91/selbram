@@ -101,7 +101,7 @@ mesh = SubResource("BoxMesh_floor")
 surface_material_override/0 = SubResource("StandardMaterial3D_floor")
 
 [node name="SpawnPoint" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 15)
+transform = Transform3D(-0.872786, 0, -0.488104, 0, 1, 0, 0.488104, 0, -0.872786, 0, 0.1, 15)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="SpawnPoint"]
 mesh = SubResource("CylinderMesh_spawn")

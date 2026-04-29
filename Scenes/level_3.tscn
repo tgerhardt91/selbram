@@ -1,9 +1,10 @@
-[gd_scene load_steps=17 format=3 uid="uid://dxvxleihpexm7"]
+[gd_scene load_steps=19 format=3 uid="uid://q3kt1i7qckmb"]
 
-[ext_resource type="Script" path="res://Scripts/Core/GameManager.cs" id="1_idseg"]
-[ext_resource type="PackedScene" uid="uid://jnteahmeabwh" path="res://Scenes/Marble.tscn" id="2_4pg0o"]
-[ext_resource type="Script" path="res://Scripts/Level/LevelManager.cs" id="3_xl0cn"]
-[ext_resource type="PackedScene" uid="uid://b7plynui6ajtx" path="res://Scenes/SpinningCylinder.tscn" id="4_cylobs"]
+[ext_resource type="Script" path="res://Scripts/Core/GameManager.cs" id="1_enmy1"]
+[ext_resource type="PackedScene" uid="uid://jnteahmeabwh" path="res://Scenes/Marble.tscn" id="2_eaxqo"]
+[ext_resource type="Script" path="res://Scripts/Level/LevelManager.cs" id="3_xsk48"]
+[ext_resource type="PackedScene" uid="uid://poutnj3cf16p" path="res://Scenes/LevelGeometry/Platforms/beam.tscn" id="4_7jxhi"]
+[ext_resource type="PackedScene" uid="uid://c4u1hh78fqvbd" path="res://Scenes/LevelGeometry/Platforms/curved_beam.tscn" id="5_gktwq"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.05, 0.05, 0.15, 1)
@@ -11,12 +12,12 @@ sky_horizon_color = Color(0.1, 0.1, 0.3, 1)
 ground_bottom_color = Color(0.05, 0.05, 0.1, 1)
 ground_horizon_color = Color(0.1, 0.1, 0.2, 1)
 
-[sub_resource type="Sky" id="Sky_qfucr"]
+[sub_resource type="Sky" id="Sky_sky"]
 sky_material = SubResource("ProceduralSkyMaterial_sky")
 
 [sub_resource type="Environment" id="Environment_env"]
 background_mode = 2
-sky = SubResource("Sky_qfucr")
+sky = SubResource("Sky_sky")
 ambient_light_source = 2
 ambient_light_color = Color(0.4, 0.45, 0.6, 1)
 tonemap_mode = 2
@@ -56,18 +57,19 @@ emission_energy_multiplier = 0.5
 [sub_resource type="BoxShape3D" id="BoxShape3D_killzone"]
 size = Vector3(200, 1, 200)
 
-[node name="Level2" type="Node3D"]
+[sub_resource type="Curve3D" id="Curve3D_ckgg1"]
+
+[node name="Level3" type="Node3D"]
 
 [node name="GameManager" type="Node" parent="."]
-script = ExtResource("1_idseg")
-MarbleScene = ExtResource("2_4pg0o")
+script = ExtResource("1_enmy1")
+MarbleScene = ExtResource("2_eaxqo")
 SpawnPointPath = NodePath("../SpawnPoint")
 
 [node name="LevelManager" type="Node" parent="."]
-script = ExtResource("3_xl0cn")
+script = ExtResource("3_xsk48")
 FinishAreaPath = NodePath("../FinishPlatform/FinishPad")
 KillZonePath = NodePath("../KillZone")
-NextLevelPath = "res://Scenes/level_3.tscn"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_env")
@@ -94,7 +96,7 @@ mesh = SubResource("BoxMesh_platform")
 surface_material_override/0 = SubResource("StandardMaterial3D_platform")
 
 [node name="FinishPlatform" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15142, -15.7285, -48.2404)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.70545, -2.84473, -28.4473)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="FinishPlatform"]
 shape = SubResource("BoxShape3D_platform")
@@ -121,10 +123,20 @@ collision_mask = 2
 [node name="CollisionShape3D" type="CollisionShape3D" parent="KillZone"]
 shape = SubResource("BoxShape3D_killzone")
 
-[node name="SpinningCylinder" parent="." instance=ExtResource("4_cylobs")]
-transform = Transform3D(0.55, 0, 0, 0, 0.00465555, -0.54998, 0, 0.54998, 0.00465555, 1, 1.2, -3)
-SpinSpeed = -2.9
+[node name="beam" parent="." instance=ExtResource("4_7jxhi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.978746, -1.48736, 15.4849)
 
-[node name="SpinningCylinder2" parent="." instance=ExtResource("4_cylobs")]
-transform = Transform3D(0.55, 0, 0, 0, 0.00465555, -0.54998, 0, 0.54998, 0.00465555, 0.748873, -6.54732, -38.4451)
-SpinSpeed = -1.0
+[node name="beam2" parent="." instance=ExtResource("4_7jxhi")]
+transform = Transform3D(-0.000174582, 0, 1, 0, 1, 0, -1, 0, -0.000174582, 0.754382, -1.483, 13.2491)
+
+[node name="beam3" parent="." instance=ExtResource("4_7jxhi")]
+transform = Transform3D(-0.00020286, 0, 0.33271, 0, 1.44819, 0, -1.16198, 0, -5.80852e-05, 0.753278, -1.18963, 6.61808)
+
+[node name="beam4" parent="." instance=ExtResource("4_7jxhi")]
+transform = Transform3D(-3.0869e-05, 0, 1.31079, 0, 0.905577, 0, -0.176817, 0, -0.00022884, 2.53113, -0.891973, 3.1844)
+
+[node name="Path3D" type="Path3D" parent="."]
+curve = SubResource("Curve3D_ckgg1")
+
+[node name="CurvedBeam" parent="." instance=ExtResource("5_gktwq")]
+transform = Transform3D(-0.587248, 0, -0.809407, 0, 1, 0, 0.809407, 0, -0.587248, -7.54147, -0.549038, -5.87565)

@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://f5nmapri8obg"
-path="res://.godot/imported/SpinningCylinder.gltf-64c9962df811afc5b85bb0f0af51f91f.scn"
+uid="uid://jebxcjh6duhy"
+path="res://.godot/imported/track_straight_8m.glb-458b2342b9e1d63cbaf046ae8a0b14b7.scn"
 
 [deps]
 
-source_file="res://SpinningCylinder.gltf"
-dest_files=["res://.godot/imported/SpinningCylinder.gltf-64c9962df811afc5b85bb0f0af51f91f.scn"]
+source_file="res://Assets/Track/track_straight_8m.glb"
+dest_files=["res://.godot/imported/track_straight_8m.glb-458b2342b9e1d63cbaf046ae8a0b14b7.scn"]
 
 [params]
 
