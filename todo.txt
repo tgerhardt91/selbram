@@ -1,6 +1,9 @@
 
 2. Have claude add comments to values in MarbleController
-6. Fix variable jump height
+3. Remove floor from level 1 and bump up the difficulty
+4. Look into "backing" csg shaped and exporting to blender?
+5. Apply checkerboard grass textures to levels (maybe make some platforms dirt, metal etc.)
+6. Add sky background to levels
 
 
 Ideas
@@ -11,3 +14,6 @@ Ideas
 - Boost pads
 - Ghost mode (disable collision with other player)
 - Enable ghost mode on player spawn for X seconds
+- Par times (C/B/A/S)
+- Monkey ball style level select
+- Tilted, curved path level using path3d and polygon3d
