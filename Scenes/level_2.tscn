@@ -1,25 +1,25 @@
-[gd_scene load_steps=18 format=3 uid="uid://dxvxleihpexm7"]
+[gd_scene load_steps=22 format=3 uid="uid://dxvxleihpexm7"]
 
 [ext_resource type="Script" path="res://Scripts/Core/GameManager.cs" id="1_idseg"]
 [ext_resource type="PackedScene" uid="uid://jnteahmeabwh" path="res://Scenes/Marble.tscn" id="2_4pg0o"]
 [ext_resource type="Script" path="res://Scripts/Level/LevelManager.cs" id="3_xl0cn"]
 [ext_resource type="PackedScene" uid="uid://b7plynui6ajtx" path="res://Scenes/SpinningCylinder.tscn" id="4_cylobs"]
 [ext_resource type="PackedScene" uid="uid://be8piuya4pfdx" path="res://Scenes/LevelGeometry/Platforms/track_halfpipe.tscn" id="5_eddgf"]
+[ext_resource type="Texture2D" uid="uid://dm123spcoml5n" path="res://Assets/Textures/kloofendal_48d_partly_cloudy_puresky_1k.hdr" id="6_hdri"]
+[ext_resource type="Texture2D" uid="uid://d044o0x8iesv0" path="res://Assets/Textures/leafy_grass_Diffuse.png" id="7_grass_diff"]
+[ext_resource type="Texture2D" uid="uid://dwqvd1gwopulb" path="res://Assets/Textures/leafy_grass_nor_gl.png" id="8_grass_norm"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
-sky_top_color = Color(0.05, 0.05, 0.15, 1)
-sky_horizon_color = Color(0.1, 0.1, 0.3, 1)
-ground_bottom_color = Color(0.05, 0.05, 0.1, 1)
-ground_horizon_color = Color(0.1, 0.1, 0.2, 1)
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_sky"]
+panorama = ExtResource("6_hdri")
 
 [sub_resource type="Sky" id="Sky_qfucr"]
-sky_material = SubResource("ProceduralSkyMaterial_sky")
+sky_material = SubResource("PanoramaSkyMaterial_sky")
 
 [sub_resource type="Environment" id="Environment_env"]
 background_mode = 2
 sky = SubResource("Sky_qfucr")
 ambient_light_source = 2
-ambient_light_color = Color(0.4, 0.45, 0.6, 1)
+ambient_light_color = Color(0.5, 0.55, 0.65, 1)
 tonemap_mode = 2
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_spawn"]
@@ -38,6 +38,15 @@ size = Vector3(10, 1, 10)
 
 [sub_resource type="BoxMesh" id="BoxMesh_platform"]
 size = Vector3(10, 1, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grass"]
+albedo_color = Color(0.6, 1, 0.4, 1)
+albedo_texture = ExtResource("7_grass_diff")
+roughness = 0.9
+normal_enabled = true
+normal_scale = 1.2
+normal_texture = ExtResource("8_grass_norm")
+uv1_scale = Vector3(4, 4, 4)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_platform"]
 albedo_color = Color(0.35, 0.35, 0.4, 1)
@@ -92,7 +101,7 @@ shape = SubResource("BoxShape3D_platform")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="EntryPlatform"]
 mesh = SubResource("BoxMesh_platform")
-surface_material_override/0 = SubResource("StandardMaterial3D_platform")
+surface_material_override/0 = SubResource("StandardMaterial3D_grass")
 
 [node name="FinishPlatform" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15142, -15.7285, -48.2404)

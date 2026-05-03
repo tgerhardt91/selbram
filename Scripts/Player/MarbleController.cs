@@ -59,6 +59,19 @@ public partial class MarbleController : RigidBody3D
 	[Export]
 	public float SuperSpeedMultiplier { get; set; } = 2.0f;
 
+	[ExportGroup("Boost")]
+	[Export(PropertyHint.Range, "5.0,50.0,1.0")]
+	public float BoostMaxForce { get; set; } = 25f;
+
+	[Export(PropertyHint.Range, "0.0,20.0,1.0")]
+	public float BoostMinForce { get; set; } = 5f;
+
+	[Export(PropertyHint.Range, "0.5,10.0,0.5")]
+	public float BoostChargeTime { get; set; } = 3.0f;
+
+	[Export(PropertyHint.Range, "0.0,30.0,1.0")]
+	public float BoostSpeedBonus { get; set; } = 10f;
+
 	#endregion
 
 	#region State
@@ -103,6 +116,12 @@ public partial class MarbleController : RigidBody3D
 	// Cached references
 	private RayCast3D? _groundRay;
 
+	// Boost state
+	private float _boostCharge;
+	private float _boostSpeedBonus;
+	private MeshInstance3D? _mesh;
+	private Color _baseColor;
+
 	#endregion
 
 	#region Signals
@@ -118,6 +137,9 @@ public partial class MarbleController : RigidBody3D
 
 	[Signal]
 	public delegate void PowerUpExpiredEventHandler(PowerUpType type);
+
+	[Signal]
+	public delegate void BoostedEventHandler(float charge);
 
 	#endregion
 
@@ -140,6 +162,15 @@ public partial class MarbleController : RigidBody3D
 		};
 		AddChild(_groundRay);
 
+		// Cache mesh and duplicate material so color tinting is per-instance
+		_mesh = GetNodeOrNull<MeshInstance3D>("MeshInstance3D");
+		if (_mesh?.GetActiveMaterial(0) is StandardMaterial3D baseMat)
+		{
+			var dupMat = (StandardMaterial3D)baseMat.Duplicate();
+			_mesh.SetSurfaceOverrideMaterial(0, dupMat);
+			_baseColor = dupMat.AlbedoColor;
+		}
+
 		// Initialize state
 		SyncStateFromPhysics();
 	}
@@ -160,6 +191,9 @@ public partial class MarbleController : RigidBody3D
 
 		// Apply movement
 		ApplyMovement(input, dt);
+
+		// Handle boost
+		HandleBoost(input, dt);
 
 		// Handle jump
 		HandleJump(input);
@@ -367,7 +401,7 @@ public partial class MarbleController : RigidBody3D
 		if (CurrentState.IsGrounded && slopeAngle > 5.0f)
 			return;
 
-		float maxSpd = MaxSpeed;
+		float maxSpd = MaxSpeed + _boostSpeedBonus;
 		if (ActivePowerUp == PowerUpType.SuperSpeed)
 			maxSpd *= SuperSpeedMultiplier;
 		maxSpd *= _currentSurface.SpeedModifier;
@@ -379,6 +413,63 @@ public partial class MarbleController : RigidBody3D
 		{
 			horizontalVel = horizontalVel.Normalized() * maxSpd;
 			LinearVelocity = new Vector3(horizontalVel.X, vel.Y, horizontalVel.Y);
+		}
+	}
+
+	private void HandleBoost(MarbleInput input, float delta)
+	{
+		if (input.BoostHeld)
+			_boostCharge = Mathf.Min(1.0f, _boostCharge + delta / BoostChargeTime);
+
+		_boostSpeedBonus = Mathf.Max(0f, _boostSpeedBonus - delta * (BoostSpeedBonus / 0.4f));
+
+		if (input.BoostReleased && _boostCharge > 0f)
+		{
+			float force = Mathf.Lerp(BoostMinForce, BoostMaxForce, _boostCharge);
+
+			Vector3 boostDir;
+			if (input.HasMovement)
+			{
+				boostDir = GetCameraRelativeDirection(input.Movement);
+			}
+			else
+			{
+				var hVel = new Vector3(LinearVelocity.X, 0f, LinearVelocity.Z);
+				boostDir = hVel.LengthSquared() > 0.01f
+					? hVel.Normalized()
+					: GetCameraRelativeDirection(new Vector2(0f, -1f));
+			}
+
+			ApplyCentralImpulse(boostDir * force);
+			_boostSpeedBonus = BoostSpeedBonus * _boostCharge;
+			EmitSignal(SignalName.Boosted, _boostCharge);
+			_boostCharge = 0f;
+		}
+
+		UpdateBoostVisuals(_boostCharge);
+	}
+
+	private void UpdateBoostVisuals(float charge)
+	{
+		if (_mesh?.GetSurfaceOverrideMaterial(0) is not StandardMaterial3D mat) return;
+
+		mat.AlbedoColor = _baseColor.Lerp(Colors.Red, charge);
+
+		if (charge >= 1.0f)
+		{
+			// Pulse emission at ~2Hz to signal full charge
+			float t = (float)Time.GetTicksMsec() / 1000f;
+			float pulse = (Mathf.Sin(t * Mathf.Pi * 4f) + 1f) / 2f;
+			mat.EmissionEnabled = true;
+			mat.Emission = Colors.OrangeRed;
+			mat.EmissionEnergyMultiplier = pulse * 3f;
+			// Micro-scale the mesh for a subtle "breathing" feel
+			_mesh.Scale = Vector3.One * (1f + pulse * 0.06f);
+		}
+		else
+		{
+			mat.EmissionEnabled = false;
+			_mesh.Scale = Vector3.One;
 		}
 	}
 
@@ -584,6 +675,10 @@ public partial class MarbleController : RigidBody3D
 		_hasJumped = false;
 		_jumpBufferTimer = 0;
 		_timeSinceGrounded = 0;
+
+		_boostCharge = 0f;
+		_boostSpeedBonus = 0f;
+		UpdateBoostVisuals(0f);
 
 		InputProvider?.Reset();
 		SyncStateFromPhysics();

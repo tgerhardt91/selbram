@@ -10,6 +10,7 @@ public class LocalInputProvider : IInputProvider
 {
     private bool _jumpWasPressedLastFrame;
     private bool _powerUpWasPressedLastFrame;
+    private bool _boostWasPressedLastFrame;
 
     /// <summary>
     /// Mouse sensitivity for camera rotation (used when mouse is captured).
@@ -58,6 +59,12 @@ public class LocalInputProvider : IInputProvider
         input.UsePowerUp = powerUpPressed && !_powerUpWasPressedLastFrame;
         _powerUpWasPressedLastFrame = powerUpPressed;
 
+        // Boost (held = charging, released = fire)
+        bool boostHeld = Godot.Input.IsActionPressed("boost");
+        input.BoostHeld = boostHeld;
+        input.BoostReleased = !boostHeld && _boostWasPressedLastFrame;
+        _boostWasPressedLastFrame = boostHeld;
+
         // Camera rotation from right stick
         var cameraInput = new Vector2(
             Godot.Input.GetAxis("camera_left", "camera_right"),
@@ -80,6 +87,7 @@ public class LocalInputProvider : IInputProvider
     {
         _jumpWasPressedLastFrame = false;
         _powerUpWasPressedLastFrame = false;
+        _boostWasPressedLastFrame = false;
         _mouseMotion = Vector2.Zero;
     }
 }
