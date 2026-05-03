@@ -29,6 +29,16 @@ public struct MarbleInput
 	public bool UsePowerUp;
 
 	/// <summary>
+	/// Whether the boost button is currently held (charging).
+	/// </summary>
+	public bool BoostHeld;
+
+	/// <summary>
+	/// Whether the boost button was released this frame (fires the boost).
+	/// </summary>
+	public bool BoostReleased;
+
+	/// <summary>
 	/// Camera rotation input. X = yaw, Y = pitch.
 	/// </summary>
 	public Vector2 CameraRotation;
@@ -47,6 +57,8 @@ public struct MarbleInput
 		JumpPressed = false,
 		JumpHeld = false,
 		UsePowerUp = false,
+		BoostHeld = false,
+		BoostReleased = false,
 		CameraRotation = Vector2.Zero,
 		Tick = 0
 	};
@@ -66,6 +78,8 @@ public struct MarbleInput
 		if (JumpPressed) flags |= 1;
 		if (JumpHeld) flags |= 2;
 		if (UsePowerUp) flags |= 4;
+		if (BoostHeld) flags |= 8;
+		if (BoostReleased) flags |= 16;
 
 		using var stream = new System.IO.MemoryStream();
 		using var writer = new System.IO.BinaryWriter(stream);
@@ -98,6 +112,8 @@ public struct MarbleInput
 		input.JumpPressed = (flags & 1) != 0;
 		input.JumpHeld = (flags & 2) != 0;
 		input.UsePowerUp = (flags & 4) != 0;
+		input.BoostHeld = (flags & 8) != 0;
+		input.BoostReleased = (flags & 16) != 0;
 		input.Tick = reader.ReadUInt32();
 
 		return input;

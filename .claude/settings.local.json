@@ -7,6 +7,10 @@
       "Bash(/Applications/Blender.app/Contents/MacOS/Blender *)",
       "mcp__blender__execute_blender_code",
       "mcp__blender__get_viewport_screenshot",
+      "mcp__blender__search_polyhaven_assets",
+      "mcp__blender__get_polyhaven_categories",
+      "mcp__blender__download_polyhaven_asset",
+      "mcp__blender__get_polyhaven_status",
       "Bash(git -C /Users/travisgerhardt/gadot/selbram ls-files)"
     ]
   }

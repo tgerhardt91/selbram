@@ -4,11 +4,11 @@
 4. Look into "backing" csg shaped and exporting to blender?
 5. Apply checkerboard grass textures to levels (maybe make some platforms dirt, metal etc.)
 6. Add sky background to levels
+7. Make boost "pulse" more visually appealing
 
 
 Ideas
 - Ice
-- Hold trigger for boost
 - Flying
 - Bumpers
 - Boost pads
